@@ -1,0 +1,14 @@
+let hyper-geometric-probability be equal to (a function that receives N, M, n, k and does the following (
+        let left be equal to (M choose k).
+        let right be equal to ((N minus M) choose (n minus k)).
+        let correct be equal to (left times right).
+        let total be equal to (N choose n).
+        return (correct divided by total).
+    )
+).
+
+let N be equal to 2.
+let M be equal to 1.
+let n be equal to 1.
+let k be equal to 1.
+print (call hyper-geometric-probability with N, M, n, k).

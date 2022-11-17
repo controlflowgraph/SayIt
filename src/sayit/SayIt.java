@@ -18,7 +18,7 @@ public class SayIt
 {
     public static void main(String[] args) throws IOException
     {
-        run(Files.readString(Path.of("data/Test.say")));
+        run(Files.readString(Path.of("data/Set.say")));
     }
 
     public static void run(String code)

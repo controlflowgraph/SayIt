@@ -1,0 +1,8 @@
+let e be equal to (the empty set).
+let t1 be equal to (a set containing 10, 20, 30).
+let t2 be equal to (a set containing 30, 40, 50).
+let diff be equal to (the difference between t1 and t2).
+print (diff).
+print (the intersection of t1 and t2).
+print (the union of t1 and t2).
+print (the power set of t1).

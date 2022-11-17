@@ -7,8 +7,7 @@ import sayit.eval.location.Location;
 import sayit.eval.location.Variable;
 import sayit.pattern.LanguagePattern;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class PatternCollection
 {
@@ -99,5 +98,120 @@ public class PatternCollection
             result *= i;
         }
         return result;
+    }
+
+    @LanguagePattern("is !a contained in !b")
+    @LanguagePattern("is !a in !b")
+    @LanguagePattern("!a is in !b")
+    public static boolean isIn(Object a, Collection<?> col)
+    {
+        return col.contains(a);
+    }
+
+    @LanguagePattern("is !a subset of !b")
+    public static boolean isSubsetOf(Set<Object> a, Set<Object> b)
+    {
+        for (Object o : a)
+        {
+            if(!b.contains(o))
+                return false;
+        }
+        return true;
+    }
+
+    @LanguagePattern("the union of  !a (* , !a) (? and !a)")
+    public static Set<Object> union(List<Set<Object>> sets)
+    {
+        Set<Object> set = new HashSet<>();
+        for (Set<Object> objects : sets)
+        {
+            set.addAll(objects);
+        }
+        return set;
+    }
+
+    @LanguagePattern("the intersection of !a (* , !a) (? and !a)")
+    public static Set<Object> intersection(List<Set<Object>> sets)
+    {
+        Set<Object> set = new HashSet<>();
+        if(sets.size() > 0)
+        {
+            loop:
+            for (Object o : sets.get(0))
+            {
+                for (Set<Object> objects : sets)
+                {
+                    if(!objects.contains(o))
+                    {
+                        continue loop;
+                    }
+                }
+                set.add(o);
+            }
+        }
+        return set;
+    }
+
+    @LanguagePattern("the empty set")
+    public static Set<Object> emptySet()
+    {
+        return Set.of();
+    }
+
+    @LanguagePattern("a set containing !a (* , !a) (? and !a)")
+    public static Set<Object> setOf(List<Object> objects)
+    {
+        return new HashSet<>(objects);
+    }
+
+    @LanguagePattern("the difference between  !a (* , !a) (? and !a)")
+    public static Set<Object> difference(List<Set<Object>> sets)
+    {
+        Set<Object> difference = new HashSet<>();
+        for (int i = 0; i < sets.size(); i++)
+        {
+            Set<Object> set = sets.get(i);
+            for (Object o : set)
+            {
+                boolean found = false;
+                for (int k = 0; !found && k < sets.size(); k++)
+                {
+                    if(i != k)
+                    {
+                        if(sets.get(k).contains(o))
+                        {
+                            found = true;
+                        }
+                    }
+                }
+
+                if(!found)
+                {
+                    difference.add(o);
+                }
+            }
+        }
+        return difference;
+    }
+
+    @LanguagePattern("the power set of !a")
+    public static Set<Set<Object>> powerSet(Set<Object> objects)
+    {
+        Set<Set<Object>> all = new HashSet<>();
+        all.add(Set.of());
+        for (Object object : objects)
+        {
+            Set<Set<Object>> iteration = new HashSet<>(all.size() * 2);
+            iteration.addAll(all);
+            for (Set<Object> objectSet : all)
+            {
+                Set<Object> added = new HashSet<>(objectSet.size() + 1);
+                added.addAll(objectSet);
+                added.add(object);
+                iteration.add(added);
+            }
+            all = iteration;
+        }
+        return all;
     }
 }

@@ -23,6 +23,11 @@ public class Block
         }
     }
 
+    public List<Match> getMatches()
+    {
+        return this.matches;
+    }
+
     public EvaluationEnvironment getEnvironment()
     {
         return this.environment;

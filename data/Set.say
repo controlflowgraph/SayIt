@@ -1,8 +1,11 @@
 let e be equal to (the empty set).
 let t1 be equal to (a set containing 10, 20, 30).
 let t2 be equal to (a set containing 30, 40, 50).
-let diff be equal to (the difference between t1 and t2).
-print (diff).
+print (the difference between t1 and t2).
 print (the intersection of t1 and t2).
 print (the union of t1 and t2).
 print (the power set of t1).
+
+let base be equal to (a set containing 10, 20, 30).
+print (a set of ((x times 2) plus 100.) where x is from base and (x is less than 30.)).
+print (a set of ((x times 2) plus 100.) where x is from base).

@@ -1,11 +1,13 @@
 package sayit;
 
+import sayit.eval.EvaluationEnvironment;
 import sayit.eval.function.Block;
 import sayit.eval.function.Func;
 import sayit.eval.function.ReturnValueException;
 import sayit.eval.location.Location;
 import sayit.eval.location.Variable;
 import sayit.pattern.LanguagePattern;
+import sayit.pattern.matcher.match.Match;
 
 import java.util.*;
 
@@ -28,6 +30,12 @@ public class PatternCollection
 
     @LanguagePattern("!a divided by !b")
     public static Number divided(Number a, Number b){ return a.doubleValue() / b.doubleValue(); }
+
+    @LanguagePattern("!a is less than !b")
+    public static boolean isLess(Number a, Number b)
+    {
+        return a.doubleValue() < b.doubleValue();
+    }
 
     @LanguagePattern("a list containing !a (* , !a) (? and !a)")
     public static List<Object> list(List<Object> object)
@@ -213,5 +221,38 @@ public class PatternCollection
             all = iteration;
         }
         return all;
+    }
+
+    @LanguagePattern("a set of #m where 'a is from !s")
+    public static Set<Object> test(Block map, Location location, Set<Object> source)
+    {
+        EvaluationEnvironment environment = map.getEnvironment();
+        Match match = map.getMatches().get(0);
+        Set<Object> mapped = new HashSet<>();
+        for (Object o : source)
+        {
+            location.set(o);
+            mapped.add(match.compute(environment));
+        }
+        return mapped;
+    }
+
+    @LanguagePattern("a set of #m where 'a is from !s and #c")
+    public static Set<Object> test(Block map, Location location, Set<Object> source, Block condition)
+    {
+        EvaluationEnvironment environment = map.getEnvironment();
+        Match match = map.getMatches().get(0);
+        Match cond = condition.getMatches().get(0);
+        Set<Object> mapped = new HashSet<>();
+        for (Object o : source)
+        {
+            location.set(o);
+            boolean check = (Boolean) cond.compute(environment);
+            if (check)
+            {
+                mapped.add(match.compute(environment));
+            }
+        }
+        return mapped;
     }
 }

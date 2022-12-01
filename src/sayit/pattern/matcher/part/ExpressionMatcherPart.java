@@ -59,6 +59,31 @@ public class ExpressionMatcherPart implements MatcherPart
             Match match = new FunctionMatch(e -> Double.parseDouble(str));
             return Map.of(this.name, List.of(match));
         }
+        else if(str.matches("\".*\""))
+        {
+            String content = str.substring(1, str.length() - 1);
+            Match match = new FunctionMatch(e -> content);
+            return Map.of(this.name, List.of(match));
+        }
+        else if(str.matches("'.*'"))
+        {
+            String content = str.substring(1, str.length() - 1);
+            char c = switch (content)
+                    {
+                        case "\\n" -> '\n';
+                        case "\\r" -> '\r';
+                        case "\\t" -> '\t';
+                        default -> content.charAt(0);
+                    };
+            Match match = new FunctionMatch(e -> c);
+            return Map.of(this.name, List.of(match));
+        }
+        else if(str.equals("true") || str.equals("false"))
+        {
+            boolean value = str.equals("true");
+            Match match = new FunctionMatch(e -> value);
+            return Map.of(this.name, List.of(match));
+        }
         else
         {
             Match match = new FunctionMatch(e -> e.get(str));

@@ -9,10 +9,46 @@ import sayit.eval.location.Variable;
 import sayit.pattern.LanguagePattern;
 import sayit.pattern.matcher.match.Match;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class PatternCollection
 {
+    @LanguagePattern("split !l at !e")
+    @LanguagePattern("split !l at each !e")
+    public static List<List<Object>> splitAtEach(List<?> data, Object element)
+    {
+        List<List<Object>> splits = new ArrayList<>();
+        List<Object> current = new ArrayList<>();
+        for (Object datum : data)
+        {
+            if (Objects.equals(datum, element))
+            {
+                splits.add(current);
+                current = new ArrayList<>();
+            }
+            else
+            {
+                current.add(datum);
+            }
+        }
+        return splits;
+    }
+
+    @LanguagePattern("content of !a")
+    public static String content(String path) throws IOException
+    {
+        return Files.readString(Path.of(path));
+    }
+
+    @LanguagePattern("lines of !a")
+    public static List<String> lines(String path) throws IOException
+    {
+        return Files.readAllLines(Path.of(path));
+    }
+
     @LanguagePattern("let 'a be equal to !b")
     public static void assignment(Location location, Object value)
     {
@@ -31,6 +67,7 @@ public class PatternCollection
     @LanguagePattern("!a divided by !b")
     public static Number divided(Number a, Number b){ return a.doubleValue() / b.doubleValue(); }
 
+    @LanguagePattern("!a less than !b")
     @LanguagePattern("!a is less than !b")
     public static boolean isLess(Number a, Number b)
     {
@@ -254,5 +291,87 @@ public class PatternCollection
             }
         }
         return mapped;
+    }
+
+    @LanguagePattern("every 'a of !l mapped to #c")
+    public static List<Object> mapping(Location location, List<?> source, Block mapper)
+    {
+        EvaluationEnvironment environment = mapper.getEnvironment();
+        Match match = mapper.getMatches().get(0);
+        List<Object> mapped = new ArrayList<>();
+        for (Object o : source)
+        {
+            location.set(o);
+            mapped.add(match.compute(environment));
+        }
+        return mapped;
+    }
+
+    @LanguagePattern("!l summed up")
+    public static Integer asInt(List<Integer> lst)
+    {
+        int summed = 0;
+        for (int i : lst)
+            summed += i;
+        return summed;
+    }
+
+    @LanguagePattern("!a as int")
+    public static Integer asInt(String s)
+    {
+        return Integer.parseInt(s);
+    }
+
+    @LanguagePattern("!a sorted")
+    @LanguagePattern("!a sorted in ascending order")
+    public static List<Object> sortedAscending(List<Object> elements)
+    {
+        return elements.stream()
+                .sorted()
+                .toList();
+    }
+
+    @LanguagePattern("!a sorted in descending order")
+    public static List<Object> sortedDescending(List<Object> elements)
+    {
+        return flipped(elements.stream()
+                .sorted()
+                .toList());
+    }
+
+    @LanguagePattern("take first !n of !l")
+    public static List<Object> takeFirstN(double n, List<Object> objects)
+    {
+        return objects.stream()
+                .limit((int) n)
+                .toList();
+    }
+
+    @LanguagePattern("!a flipped")
+    @LanguagePattern("!a reversed")
+    public static List<Object> flipped(List<Object> elements)
+    {
+        List<Object> objs = new ArrayList<>();
+        for (int i = elements.size() - 1; i >= 0; i--)
+        {
+            objs.add(elements.get(i));
+        }
+        return objs;
+    }
+
+    @LanguagePattern("!a sorted by")
+    public static List<Object> sortedBy(List<Object> elements, Block sorter)
+    {
+        EvaluationEnvironment environment = sorter.getEnvironment();
+        Match match = sorter.getMatches().get(0);
+        Location a = new Variable(environment, "a");
+        Location b = new Variable(environment, "b");
+        return elements.stream()
+                .sorted((v1, v2) -> {
+                    a.set(v1);
+                    b.set(v2);
+                    return (Integer) match.compute(environment);
+                })
+                .toList();
     }
 }

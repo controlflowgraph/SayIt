@@ -2,8 +2,10 @@ package sayit.pattern.matcher;
 
 import sayit.code.TokenSupplier;
 import sayit.pattern.matcher.match.Match;
+import sayit.pattern.matcher.part.ExpressionMatcherPart;
 
 import java.util.List;
+import java.util.Map;
 
 public class MatcherContext
 {
@@ -28,6 +30,24 @@ public class MatcherContext
         }
 
         StringBuilder builder = new StringBuilder();
+        supplier.set(start);
+        int remaining = 0;
+        while(supplier.has())
+        {
+            supplier.next();
+            remaining++;
+        }
+
+        supplier.set(start);
+        if(remaining == 1)
+        {
+            Map<String, List<Match>> v = new ExpressionMatcherPart("$").match(this, supplier);
+            if(v != null)
+            {
+                return v.get("$").get(0);
+            }
+        }
+
         supplier.set(start);
         while(supplier.has())
         {

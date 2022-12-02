@@ -10,7 +10,7 @@ public class CodeTokenizer
     private static final List<Pattern> CATEGORIES = List.of(
             Pattern.compile("\"(\\\\.|[^\"])*\""),
             Pattern.compile("'(\\\\.|.)'"),
-            Pattern.compile("[_a-zA-Z][a-zA-Z0-9]*"),
+            Pattern.compile("[_a-zA-Z][_a-zA-Z0-9-]*"),
             Pattern.compile("\\d+\\.\\d+"),
             Pattern.compile("\\d+"),
             Pattern.compile("[.+\\-*/%&|<=>?!]+"),

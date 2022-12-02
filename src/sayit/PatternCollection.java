@@ -37,6 +37,12 @@ public class PatternCollection
         return splits;
     }
 
+    @LanguagePattern("!l at !i")
+    public static Object content(List<?> lst, int index) throws IOException
+    {
+        return lst.get(index);
+    }
+
     @LanguagePattern("content of !a")
     public static String content(String path) throws IOException
     {
@@ -48,6 +54,9 @@ public class PatternCollection
     {
         return Files.readAllLines(Path.of(path));
     }
+
+    @LanguagePattern("!a is equal to !b")
+    public static boolean equal(Object a, Object b){ return Objects.equals(a, b); }
 
     @LanguagePattern("let 'a be equal to !b")
     public static void assignment(Location location, Object value)
@@ -116,7 +125,7 @@ public class PatternCollection
         return func.compute(List.of());
     }
 
-    @LanguagePattern("call !a with !b (+ , !b)")
+    @LanguagePattern("call !a with !b (* , !b)")
     public static Object call(Func func, List<Object> arguments)
     {
         return func.compute(arguments);
@@ -340,10 +349,10 @@ public class PatternCollection
     }
 
     @LanguagePattern("take first !n of !l")
-    public static List<Object> takeFirstN(double n, List<Object> objects)
+    public static List<Object> takeFirstN(int n, List<Object> objects)
     {
         return objects.stream()
-                .limit((int) n)
+                .limit(n)
                 .toList();
     }
 
@@ -373,5 +382,44 @@ public class PatternCollection
                     return (Integer) match.compute(environment);
                 })
                 .toList();
+    }
+
+    @LanguagePattern("character !a of !b")
+    public static char characterAt(int i, String str)
+    {
+        return str.charAt(i);
+    }
+
+    @LanguagePattern("when !v is (+ !v1 then #v2)")
+    public static Object when(Object value, List<Object> cases, List<Block> values)
+    {
+        for (int i = 0; i < cases.size(); i++)
+        {
+            if(Objects.equals(value, cases.get(i)))
+            {
+                Match m = values.get(i).getMatches().get(0);
+                EvaluationEnvironment env = values.get(i).getEnvironment();
+                return m.compute(env);
+            }
+        }
+        throw new RuntimeException("Fell through all cases!");
+    }
+
+    @LanguagePattern("in case (+ #c then #v)")
+    public static Object when(List<Block> conditions, List<Block> values)
+    {
+        for (int i = 0; i < conditions.size(); i++)
+        {
+            Match match = conditions.get(i).getMatches().get(0);
+            EvaluationEnvironment environment = conditions.get(i).getEnvironment();
+            boolean b = (boolean) match.compute(environment);
+            if(b)
+            {
+                Match m = values.get(i).getMatches().get(0);
+                EvaluationEnvironment env = values.get(i).getEnvironment();
+                return m.compute(env);
+            }
+        }
+        throw new RuntimeException("Fell through all cases!");
     }
 }

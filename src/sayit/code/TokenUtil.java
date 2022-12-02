@@ -32,7 +32,7 @@ public class TokenUtil
         }
 
         if(!found)
-            throw new RuntimeException("Expected '" + end + "'");
+            throw new RuntimeException("Expected '" + end + "'" + token);
 
         return token;
     }

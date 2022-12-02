@@ -32,6 +32,12 @@ public class MethodMatch implements Match
         {
             return this.method.invoke(null, args);
         }
+        catch (IllegalArgumentException e)
+        {
+            System.out.println("THE ARGUMENTS ARE: ");
+            System.out.println(Arrays.toString(args));
+            throw new RuntimeException();
+        }
         catch (InvocationTargetException e)
         {
             if(e.getCause() instanceof CustomRuntimeException r)
@@ -42,7 +48,7 @@ public class MethodMatch implements Match
             Class<?>[] arr = new Class[args.length];
             for (int i = 0; i < args.length; i++)
             {
-                arr[i] = args[i].getClass();
+                arr[i] = args[i] != null ? args[i].getClass() : null;
             }
             System.out.println(this.method);
             System.out.println(Arrays.toString(arr));

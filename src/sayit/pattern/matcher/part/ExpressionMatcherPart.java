@@ -34,7 +34,7 @@ public class ExpressionMatcherPart implements MatcherPart
         if(next.equals("("))
         {
             List<String> strings = TokenUtil.collectUntilEnd(")", supplier);
-            if(strings.size() == 1)
+            if(strings.size() == 1 || strings.size() == 2 && strings.get(1).equals("."))
             {
                 return match(strings.get(0));
             }
@@ -54,9 +54,16 @@ public class ExpressionMatcherPart implements MatcherPart
 
     private Map<String, List<Match>> match(String str)
     {
-        if(str.matches("\\d+(\\.\\d+)?"))
+        if(str.matches("\\d+"))
         {
-            Match match = new FunctionMatch(e -> Double.parseDouble(str));
+            int value = Integer.parseInt(str);
+            Match match = new FunctionMatch(e -> value);
+            return Map.of(this.name, List.of(match));
+        }
+        if(str.matches("\\d+\\.\\d+"))
+        {
+            double value = Double.parseDouble(str);
+            Match match = new FunctionMatch(e -> value);
             return Map.of(this.name, List.of(match));
         }
         else if(str.matches("\".*\""))

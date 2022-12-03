@@ -36,6 +36,7 @@ public class MethodMatch implements Match
         {
             System.out.println("THE ARGUMENTS ARE: ");
             System.out.println(Arrays.toString(args));
+            System.out.println(this.method);
             throw new RuntimeException();
         }
         catch (InvocationTargetException e)

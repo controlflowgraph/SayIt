@@ -76,6 +76,12 @@ public class PatternCollection
     @LanguagePattern("!a divided by !b")
     public static Number divided(Number a, Number b){ return a.doubleValue() / b.doubleValue(); }
 
+    @LanguagePattern("!a floored")
+    public static int floored(Number a)
+    {
+        return a.intValue();
+    }
+
     @LanguagePattern("!a less than !b")
     @LanguagePattern("!a is less than !b")
     public static boolean isLess(Number a, Number b)
@@ -317,11 +323,11 @@ public class PatternCollection
     }
 
     @LanguagePattern("!l summed up")
-    public static Integer asInt(List<Integer> lst)
+    public static double summed(List<?> lst)
     {
-        int summed = 0;
-        for (int i : lst)
-            summed += i;
+        double summed = 0;
+        for (Object i : lst)
+            summed += ((Number) i).doubleValue();
         return summed;
     }
 
@@ -329,6 +335,12 @@ public class PatternCollection
     public static Integer asInt(String s)
     {
         return Integer.parseInt(s);
+    }
+
+    @LanguagePattern("!a as an int")
+    public static Integer asAnInt(char c)
+    {
+        return (int) c;
     }
 
     @LanguagePattern("!a sorted")
@@ -421,5 +433,70 @@ public class PatternCollection
             }
         }
         throw new RuntimeException("Fell through all cases!");
+    }
+
+    @LanguagePattern("the substring from !a of !s")
+    public static String sub(int start, String s)
+    {
+        return s.substring(start);
+    }
+
+    @LanguagePattern("the substring from !a to !b of !s")
+    public static String sub(int start, int end, String s)
+    {
+        return s.substring(start, end);
+    }
+
+    @LanguagePattern("!a as a set")
+    public static Set<?> asASet(Collection<?> collection)
+    {
+        return new HashSet<>(collection);
+    }
+
+    @LanguagePattern("the characters of !a")
+    public static List<Character> characters(String s)
+    {
+        return s.chars().mapToObj(i -> (char) i).toList();
+    }
+
+    @LanguagePattern("the length of !a")
+    public static int len(String s)
+    {
+        return s.length();
+    }
+
+    @LanguagePattern("!a as a list")
+    public static List<?> asAList(Collection<?> collection)
+    {
+        return new ArrayList<>(collection);
+    }
+
+    @LanguagePattern("!a is lowercase character")
+    public static boolean isLower(char c)
+    {
+        return 'a' <= c && c <= 'z';
+    }
+
+    @LanguagePattern("!a is uppercase character")
+    public static boolean isUpper(char c)
+    {
+        return 'A' <= c && c <= 'Z';
+    }
+
+    @LanguagePattern("!a in groups of size !n")
+    public static <T> List<List<T>> groups(List<T> elements, int n)
+    {
+        List<List<T>> all = new ArrayList<>();
+        Iterator<T> iterator = elements.iterator();
+        while (iterator.hasNext())
+        {
+            List<T> current = new ArrayList<>();
+            for(int i = 0; iterator.hasNext() && i < n; i++)
+            {
+                current.add(iterator.next());
+            }
+            all.add(current);
+        }
+        return all;
     }
 }

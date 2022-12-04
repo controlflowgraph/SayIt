@@ -37,6 +37,13 @@ public class PatternCollection
         return splits;
     }
 
+    @LanguagePattern("!s split at !v")
+    public static List<String> split(String s, String v)
+    {
+        return new ArrayList<>(Arrays.asList(s.split(v)));
+    }
+
+
     @LanguagePattern("!l at !i")
     public static Object content(List<?> lst, int index) throws IOException
     {
@@ -87,6 +94,13 @@ public class PatternCollection
     public static boolean isLess(Number a, Number b)
     {
         return a.doubleValue() < b.doubleValue();
+    }
+
+    @LanguagePattern("!a less or equal to !b")
+    @LanguagePattern("!a is less or equal to !b")
+    public static boolean isLessEqual(Number a, Number b)
+    {
+        return a.doubleValue() <= b.doubleValue();
     }
 
     @LanguagePattern("a list containing !a (* , !a) (? and !a)")
@@ -498,5 +512,31 @@ public class PatternCollection
             all.add(current);
         }
         return all;
+    }
+
+    @LanguagePattern("!a or !b")
+    public static boolean or(boolean a, boolean b)
+    {
+        return a || b;
+    }
+
+    @LanguagePattern("!a and !b")
+    public static boolean and(boolean a, boolean b)
+    {
+        return a && b;
+    }
+
+    @LanguagePattern("not !a")
+    public static boolean not(boolean a)
+    {
+        return !a;
+    }
+
+    @LanguagePattern("the number of occurrences of !v in !l")
+    public static int numberOfOccurrences(Object value, List<?> list)
+    {
+        return (int) list.stream()
+                .filter(v -> Objects.equals(v, value))
+                .count();
     }
 }
